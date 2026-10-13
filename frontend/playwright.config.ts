@@ -1,0 +1,2 @@
+import { defineConfig, devices } from '@playwright/test';
+export default defineConfig({testDir: './tests/browser', fullyParallel: false, workers: 1, timeout: 30000, reporter: [['list'], ['json', {outputFile: '../.audit/implementation/browser-results.json'}]], use: {baseURL: 'http://127.0.0.1:5190', ...devices['Desktop Chrome'], channel: 'chrome', launchOptions: {args: ['--renderer-process-limit=2']}, trace: 'retain-on-failure'}, webServer: {command: 'node tests/start-e2e.mjs', url: 'http://127.0.0.1:5190', reuseExistingServer: false, timeout: 60000}});

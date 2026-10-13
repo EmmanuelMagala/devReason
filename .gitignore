@@ -1,0 +1,36 @@
+# Local audit evidence and internal project reports
+.audit/
+/APPLICATION_AUDIT_REPORT.md
+/UX_PRODUCT_REVIEW.md
+/IMPLEMENTATION_STATUS.md
+/PERFORMANCE_AUDIT_REPORT.md
+
+# Generated manual exports; keep the Markdown manual and diagram sources
+/DEVREASON_MANUAL.html
+/DEVREASON_MANUAL.pdf
+
+# Environment values and private keys; keep setup templates
+**/.env*
+!**/.env.example
+!**/.env.*.example
+!**/.env.sample
+!**/.env.*.sample
+!**/.env.template
+!**/.env.*.template
+*.pem
+*.key
+
+# Dependencies and Python caches
+**/.venv/
+**/.venv-win/
+**/node_modules/
+**/__pycache__/
+**/.pytest_cache/
+*.py[cod]
+
+# Build output, browser-test artifacts, and logs
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+*.tsbuildinfo
+*.log

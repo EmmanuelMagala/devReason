@@ -1,0 +1,12 @@
+.env
+.env.live_smoke
+.venv/
+.venv-win/
+requirements.windows.txt
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+alembic/versions/__pycache__/
+.DS_Store
+github_app_private_key.pem

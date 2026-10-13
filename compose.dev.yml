@@ -1,0 +1,24 @@
+services:
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "127.0.0.1:6381:6379"
+    volumes:
+      - devreason_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  test-db:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "127.0.0.1:55439:5432"
+    environment:
+      POSTGRES_DB: devreason_test
+      POSTGRES_USER: devreason
+      POSTGRES_PASSWORD: local-test-only
+    profiles: [test]
+volumes:
+  devreason_redis:

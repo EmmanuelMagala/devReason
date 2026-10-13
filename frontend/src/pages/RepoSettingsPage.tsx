@@ -1,0 +1,26 @@
+import { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { workspaceApi } from '@/api/workspace';
+import { reposApi } from '@/api/repos';
+import { QueryState, errorText } from '@/components/shared/QueryState';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import type { ArchRule } from '@/types';
+
+export function RepoSettingsPage() { const {repoId = ''} = useParams(); return <RuleWorkspace key={repoId} repoId={repoId} />; }
+function RuleWorkspace({repoId}: {repoId: string}) {
+  const rules = useQuery({queryKey: ['rules', repoId], queryFn: () => reposApi.getRules(repoId)}); const qc = useQueryClient(); const [content, setContent] = useState('');
+  const save = useMutation({mutationFn: (text: string) => reposApi.addRule(repoId, {content: text}), onSuccess: () => { setContent(''); void qc.invalidateQueries({queryKey: ['rules', repoId]}); }});
+  const suggest = useMutation({mutationFn: () => workspaceApi.suggest(repoId), onSuccess: () => void qc.invalidateQueries({queryKey: ['rules', repoId]})});
+  return <div className="page-stack"><nav className="breadcrumbs" aria-label="Breadcrumb"><Link to="/repositories">Repositories</Link><span>/</span><Link to={`/repos/${repoId}`}>Repository</Link><span>/</span><span>Rules</span></nav><div className="page-heading"><div><h1>Architecture rules</h1><p>Only approved rules are enforced in future reviews.</p></div><Button variant="outline" disabled={suggest.isPending} onClick={() => suggest.mutate()}>{suggest.isPending ? 'Reading repository…' : 'Suggest rules with AI'}</Button></div><QueryState loading={rules.isPending} error={rules.error || suggest.error} retry={() => void rules.refetch()} />
+    <section className="panel page-stack"><h2>Add an approved rule</h2><div className="flex flex-wrap gap-2">{['Route handlers delegate database work to services.', 'Every protected endpoint verifies resource ownership.', 'Background work must be cancellable and avoid blocking I/O.'].map(t => <Button key={t} className="h-auto whitespace-normal text-left" variant="outline" size="sm" onClick={() => setContent(t)}>{t}</Button>)}</div><form className="page-stack" onSubmit={e => { e.preventDefault(); save.mutate(content); }}><label htmlFor="rule-content">Rule content</label><Textarea id="rule-content" value={content} maxLength={4000} onChange={e => setContent(e.target.value)} placeholder="Describe a specific, enforceable architecture boundary…" /><Button className="self-start" disabled={!content.trim() || save.isPending}>{save.isPending ? 'Saving…' : 'Save approved rule'}</Button>{save.error && <p role="alert">{errorText(save.error)}</p>}</form></section>
+    {rules.data?.length === 0 && <p className="empty-panel">No architecture rules yet. Add a template or ask AI for suggestions.</p>}
+    {rules.data?.map(rule => <RuleEditor key={rule.id} rule={rule} repoId={repoId} />)}
+  </div>;
+}
+function RuleEditor({rule, repoId}: {rule: ArchRule; repoId: string}) {
+  const [editing, setEditing] = useState(false); const [content, setContent] = useState(rule.content); const [confirmDelete, setConfirmDelete] = useState(false); const qc = useQueryClient();
+  const action = useMutation({mutationFn: async (data: {content?: string; status?: string; remove?: boolean}) => data.remove ? workspaceApi.deleteRule(repoId, rule.id) : workspaceApi.updateRule(repoId, rule.id, data), onSuccess: () => { setEditing(false); void qc.invalidateQueries({queryKey: ['rules', repoId]}); }});
+  return <article className="panel page-stack"><div className="flex items-center justify-between"><span className={`badge ${rule.status === 'approved' ? 'text-emerald-800' : ''}`}>{rule.status === 'approved' ? 'Approved · enforced' : rule.status}</span><span className="text-xs text-muted-foreground">{rule.source === 'manual' ? 'Created by you' : 'AI suggestion'}</span></div>{editing ? <Textarea aria-label="Edit rule content" value={content} onChange={e => setContent(e.target.value)} maxLength={4000} /> : <p>{rule.content}</p>}<div className="flex flex-wrap gap-2">{editing ? <><Button disabled={action.isPending || !content.trim()} onClick={() => action.mutate({content})}>Save changes</Button><Button variant="ghost" onClick={() => setEditing(false)}>Cancel edit</Button></> : <><Button variant="outline" onClick={() => { setContent(rule.content); setEditing(true); }}>Edit</Button>{rule.status !== 'approved' && <Button variant="outline" disabled={action.isPending} onClick={() => action.mutate({status: 'approved'})}>Approve rule</Button>}{rule.status !== 'rejected' && <Button variant="ghost" disabled={action.isPending} onClick={() => action.mutate({status: 'rejected'})}>{rule.status === 'approved' ? 'Disable rule' : 'Reject suggestion'}</Button>}<Button variant="ghost" onClick={() => setConfirmDelete(true)}>Delete</Button></>}{confirmDelete && <><span className="self-center text-sm">Delete this rule permanently?</span><Button variant="destructive" disabled={action.isPending} onClick={() => action.mutate({remove: true})}>Confirm deletion</Button><Button variant="ghost" onClick={() => setConfirmDelete(false)}>Keep rule</Button></>}</div>{action.error && <p role="alert">{errorText(action.error)}</p>}</article>;
+}

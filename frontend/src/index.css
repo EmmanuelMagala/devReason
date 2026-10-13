@@ -1,0 +1,110 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  :root { --background: 220 25% 98%; --foreground: 222 32% 17%; --card: 0 0% 100%; --card-foreground: 222 32% 17%; --popover: 0 0% 100%; --popover-foreground: 222 32% 17%; --primary: 239 52% 43%; --primary-foreground: 0 0% 100%; --secondary: 238 45% 96%; --secondary-foreground: 239 52% 35%; --muted: 220 20% 95%; --muted-foreground: 220 12% 42%; --accent: 238 45% 96%; --accent-foreground: 239 52% 35%; --destructive: 0 65% 43%; --destructive-foreground: 0 0% 100%; --border: 220 20% 89%; --input: 220 20% 84%; --ring: 239 52% 43%; --radius: .75rem; }
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground antialiased; font-family: Inter, 'Segoe UI', system-ui, sans-serif; margin: 0; line-height: 1.6; }
+  h1, h2, h3 { line-height: 1.3; letter-spacing: -.025em; overflow-wrap: anywhere; }
+  h1 { font-size: clamp(1.6rem, 3vw, 2.15rem); font-weight: 650; }
+  h2 { font-size: 1.125rem; font-weight: 600; }
+  h3 { font-size: .95rem; font-weight: 600; }
+  code, pre { font-family: 'Cascadia Code', Consolas, monospace; }
+  button, a, input, select, textarea, summary { -webkit-tap-highlight-color: transparent; }
+  :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 3px; }
+  main:focus { outline: none; }
+  select { @apply h-10 rounded-md border bg-white px-3 text-sm; max-width: 100%; }
+  summary { cursor: pointer; font-size: .9rem; font-weight: 600; }
+  a { text-underline-offset: 3px; }
+}
+@layer components {
+  .app-layout { @apply min-h-screen lg:grid lg:grid-cols-[232px_minmax(0,1fr)]; }
+  .desktop-sidebar { @apply hidden border-r bg-white px-5 py-7 lg:block; }
+  .brand { @apply mb-10 flex items-center gap-2.5 text-xl font-semibold text-primary; }
+  .nav-item { @apply flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted; }
+  .nav-active { @apply bg-secondary text-primary; }
+  .sidebar-note { @apply mt-12 px-3 text-xs text-muted-foreground; }
+  .app-header { @apply flex h-[72px] items-center justify-between border-b bg-white px-4 sm:px-8; }
+  .main-content { @apply mx-auto max-w-[1280px] px-4 py-7 sm:px-8 sm:py-9; }
+  .page-stack { @apply flex flex-col gap-5; }
+  .page-heading { @apply flex flex-wrap items-center justify-between gap-4 pb-2; }
+  .page-heading p:not(.eyebrow) { @apply mt-2 max-w-2xl text-sm text-muted-foreground; }
+  .eyebrow { @apply mb-2 text-xs font-semibold uppercase tracking-widest text-primary; }
+  .panel { @apply min-w-0 rounded-xl border bg-white p-5 sm:p-6; box-shadow: 0 2px 5px #1b244004; }
+  .hero-panel { @apply grid gap-8 rounded-xl border bg-white p-6 sm:p-8 md:grid-cols-2; }
+  .hero-panel h2 { @apply mb-2 mt-4 text-xl; }
+  .hero-panel p { @apply mb-5 max-w-md text-sm text-muted-foreground; }
+  .quick-review { @apply flex flex-col justify-center gap-3 rounded-lg bg-muted/60 p-5; }
+  .quick-review label { @apply flex items-center gap-2 text-sm font-medium; }
+  .toolbar { @apply flex flex-wrap items-center gap-3; }
+  .toolbar > input { @apply max-w-md; }
+  .search-field { @apply relative flex min-w-[220px] items-center gap-2; flex: 1 1 240px; max-width: 420px; }
+  .search-field > svg { @apply absolute left-3 text-muted-foreground; }
+  .search-field input { @apply pl-10; }
+  .repo-grid { @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-3; }
+  .repo-card { @apply flex min-w-0 flex-col gap-2 rounded-xl border bg-white p-5 transition-colors hover:border-primary; }
+  .repo-card h2 { @apply break-words; }
+  .review-rows { @apply divide-y rounded-lg border bg-white; }
+  .review-rows:empty { display: none; }
+  .review-row { @apply flex min-h-[84px] items-center justify-between gap-4 p-4 transition-colors hover:bg-muted/50; }
+  .review-row h3 { @apply mb-1; }
+  .pr-row { @apply flex flex-wrap items-center gap-3 p-4; }
+  .pr-row p { @apply mt-1 break-all text-xs text-muted-foreground; }
+  .pagination { @apply flex flex-wrap items-center justify-end gap-2 text-sm text-muted-foreground; }
+  .pagination > span { @apply mr-auto; }
+  .empty-panel { @apply flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed bg-white px-5 py-12 text-center; }
+  .empty-panel p { @apply max-w-lg text-sm text-muted-foreground; }
+  .state-box { @apply flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-white p-5 text-sm; }
+  .notice { @apply flex flex-wrap items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950; }
+  .notice a { @apply font-medium underline; }
+  .tabs { @apply flex gap-5 overflow-x-auto border-b; }
+  .tabs a { @apply whitespace-nowrap border-b-2 border-transparent px-1 pb-3 text-sm text-muted-foreground; }
+  .tabs a.active { @apply border-primary font-medium text-primary; }
+  .breadcrumbs { @apply flex flex-wrap gap-2 text-xs text-muted-foreground; }
+  .breadcrumbs a { @apply hover:text-primary hover:underline; }
+  .badge { @apply inline-flex rounded-md bg-muted px-2 py-1 text-xs font-medium; }
+  .field-label { @apply flex flex-col gap-2 text-sm font-medium; }
+  .scope-files { @apply max-h-72 overflow-auto rounded-lg border p-4; }
+  .scope-files legend { @apply px-1 text-sm font-medium; }
+  .scope-files label { @apply flex min-h-9 items-center gap-3 py-1 text-xs; }
+  .scope-files code { overflow-wrap: anywhere; }
+  .scope-files input { @apply h-4 w-4 shrink-0; }
+  .connection-row { @apply flex flex-wrap items-center gap-3 border-b pb-4; }
+  .review-summary { @apply flex flex-col gap-5 rounded-xl border border-indigo-200 bg-indigo-50 p-5 sm:p-6; }
+  .review-summary p { @apply mt-2 text-sm; }
+  .summary-warning { @apply border-amber-200 bg-amber-50; }
+  .severity-totals { @apply grid grid-cols-4 gap-2; max-width: 480px; }
+  .severity-totals button { @apply flex flex-col rounded-lg border border-white bg-white/75 p-2 text-center; }
+  .severity-totals button[aria-pressed=true] { @apply border-primary; }
+  .severity-totals strong { @apply text-2xl font-semibold; }
+  .severity-totals span { @apply text-xs capitalize text-muted-foreground; }
+  .coverage-lists { @apply mt-4 grid gap-4 md:grid-cols-3; max-height: 350px; overflow: auto; }
+  .coverage-lists code { @apply block py-1 text-xs; overflow-wrap: anywhere; }
+  .posting-preview { @apply max-h-80 overflow-auto rounded-lg bg-muted p-4 text-xs; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .chat-panel { @apply flex flex-col gap-5; }
+  .chat-messages { @apply flex flex-col gap-4; }
+  .chat-message { @apply max-w-[95%] rounded-xl bg-muted/60 p-4 sm:max-w-[85%]; }
+  .chat-message.user { @apply self-end bg-secondary; }
+  .message-role { @apply mb-2 text-xs font-semibold text-muted-foreground; }
+  .chat-composer { @apply flex flex-col gap-3 border-t pt-5; }
+  .chat-composer label { @apply text-sm font-medium; }
+  .prompt-starters { @apply flex flex-wrap gap-2; }
+  .prompt-starters > p { @apply w-full; }
+  .prose { @apply text-sm leading-7; overflow-wrap: anywhere; }
+  .prose p { @apply mb-3; }
+  .prose h1, .prose h2, .prose h3 { @apply mb-3 mt-5 font-semibold; }
+  .prose h1 { @apply text-xl; }
+  .prose h2 { @apply text-lg; }
+  .prose ul { @apply mb-3 list-disc pl-5; }
+  .prose ol { @apply mb-3 list-decimal pl-5; }
+  .prose li { @apply mb-1; }
+  .prose a { @apply text-primary underline; }
+  .prose pre { @apply my-3 overflow-auto rounded-lg bg-muted p-4 text-xs; }
+  .prose code:not(pre code) { @apply rounded bg-muted px-1 py-0.5 text-xs; }
+  .prose table { @apply my-4 block max-w-full overflow-auto border-collapse text-xs; }
+  .prose th, .prose td { @apply border px-3 py-2 text-left; }
+  .prose blockquote { @apply my-3 border-l-4 pl-4 text-muted-foreground; }
+  .skip-link { @apply fixed left-4 top-4 z-50 -translate-y-24 rounded bg-primary px-4 py-2 text-white focus:translate-y-0; }
+  .surface-glow { box-shadow: 0 8px 30px #202a4010; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
